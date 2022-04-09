@@ -15,7 +15,8 @@ class RandomCodeGenerator
     @random_code_array = []
   end
 
-  # generates code from api if internet connection exists, otherwise will generate an internal code.
+  # generates code from api if internet connection exists
+  # otherwise will generate an internal code.
   def generate_secret_code_array
     if internet_connection?
       get_code_from_api
@@ -66,57 +67,72 @@ class RandomCodeGenerator
 end
 
 class Mastermind
-
   DIGITS                        = 4
+
 
   def initialize
     @rounds                     = 10
     @current_round              = 0
     @code_array                 = []
+    @number_generator           = RandomCodeGenerator.new
+    set_guess_variables
+  end
+
+
+  def set_guess_variables
     @code_check_array           = []
     @guess_array                = []
     @right_number_right_place   = 0
     @right_number_wrong_place   = 0
-    @number_generator           = RandomCodeGenerator.new
   end
 
 
   def get_user_input
     temp_array = gets.chomp.scan(/\d/)
-    temp_array.each { |x| @guess_array << x.to_i }
+    temp_array.each { |digit| @guess_array << digit.to_i }
+    @code_array.each { |digit| @code_check_array << digit }
   end
+
 
   def run
     @code_array = @number_generator.generate_secret_code_array
-    @code_array.each { |digit| @code_check_array << digit }
+    puts "#{@code_array}"
     start_game
   end
+
 
   def start_game
     puts "Will you guess the secret code?"
     while (@current_round < @rounds)
       get_user_input
       check_user_input
+      @current_round += 1
+      print_program_response
+      set_guess_variables
     end
   end
+
 
   def check_user_input
     check_well_placed_digit
     check_misplaced_digit
-    print_program_response
+
   end
+
 
   def check_well_placed_digit
     index = 0
-    while index < DIGITS
-      if @guess_array[index] = @code_check_array[index]
+    while index < DIGITS - @right_number_right_place
+      if @guess_array[index] == @code_check_array[index]
         @right_number_right_place += 1
         @guess_array.delete_at(index)
         @code_check_array.delete_at(index)
+        index -= 1
       end
       index += 1
     end
   end
+
 
   def check_misplaced_digit
     index = 0
@@ -134,8 +150,9 @@ class Mastermind
     end
   end
 
+
   def print_program_response
-    @current_round += 1
+
     guess_count = @rounds - @current_round
     if @right_number_right_place == DIGITS
       puts "Congratulations! You Won!"
