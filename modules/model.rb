@@ -24,8 +24,8 @@ class ConnectionSQlite
     CREATE TABLE IF NOT EXISTS #{$tablename}
       (
       id INTEGER PRIMARY KEY,
-      score INTEGER NOT NULL,
-      username varchar(30) NOT NULL,
+      score int NOT NULL,
+      username varchar(30) NOT NULL
       );
       SQL
   end
@@ -45,11 +45,20 @@ class User
     @username      = array[2]
   end
 
+  def to_hash
+    {id: @id, score: @score, username: @username}
+  end
+
+  def inspect
+      query = <<-STR
+      <User id: "#{id}", score: "#{@score}", username: "#{@username}">
+      STR
+  end
+
 
   def self.add_user(user_info)
     query = <<-REQUEST
-      INSERT INTO #{$tablename} (score, username) 
-      VALUES ("#{user_info[:score]}",
+      INSERT INTO #{$tablename} (score, username) VALUES ("#{user_info[:score]}",
               "#{user_info[:username]}")
     REQUEST
 
@@ -77,7 +86,8 @@ end
 
 
 def _main()
-  p User.add_user(score: 10, username: "Brian")
+  p User.add_user(score: 11, username: "Batman")
+  p User.high_score_list
 end
 
 _main()
