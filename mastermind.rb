@@ -1,8 +1,14 @@
+# TODO(Brian Thompson): Add functionality to play again
+# TODO(Brian Thompson): Create Unit Tests
+# TODO(Brian Thompson): Allow varying difficulty levels
+# TODO(Brian Thompson): Implement High Score logic, Add SQL database to store information
+
+
 require 'uri'
 require 'net/http'
 
-class RandomCodeGenerator
 
+class RandomCodeGenerator
   DIGITS_REQUIRED      = 4
   MIN_NUMBER           = 0
   MAX_NUMBER           = 7
@@ -74,12 +80,13 @@ class Mastermind
     @rounds                     = 10
     @current_round              = 0
     @code_array                 = []
+    @game_over_flag             = false
     @number_generator           = RandomCodeGenerator.new
-    set_guess_variables
+    init_guess_variables
   end
 
 
-  def set_guess_variables
+  def init_guess_variables
     @code_check_array           = []
     @guess_array                = []
     @right_number_right_place   = 0
@@ -108,15 +115,19 @@ class Mastermind
       check_user_input
       @current_round += 1
       print_program_response
-      set_guess_variables
+      if @game_over_flag == true
+        break
+      else
+        init_guess_variables
+      end
     end
+    play_again
   end
 
 
   def check_user_input
     check_well_placed_digit
     check_misplaced_digit
-
   end
 
 
@@ -152,29 +163,51 @@ class Mastermind
 
 
   def print_program_response
-
-    guess_count = @rounds - @current_round
-    if @right_number_right_place == DIGITS
-      puts "Congratulations! You Won!"
-
-    elsif @right_number_right_place == 0 && @right_number_wrong_place == 0
+    case
+    when @right_number_right_place == DIGITS
+      puts "Congratulations! You've Won!"
+      @game_over_flag = true
+    when @right_number_right_place == 0 && @right_number_wrong_place == 0
       puts "The numbers you have guessed aren't included in the secret code!"
-
-    elsif @current_round == @rounds
-      puts "So sorry, you're out of guesses! Better luck next time!"
-
     else
       puts "Right Number Right Digit: #{@right_number_right_place}"
       puts "Right Number Wrong Digit: #{@right_number_wrong_place}"
     end
+    track_player_guesses
+  end
 
-    if @current_round != @rounds
+
+  def track_player_guesses
+    guess_count = @rounds - @current_round
+    case
+    when @current_round != @rounds && @game_over_flag == false
       puts "You have #{guess_count} guesses remaining!"
+    when @current_round == @rounds
+      puts "So sorry, you're out of guesses! Better luck next time!"
+    else
+      puts "when will i print?"
     end
   end
 
 
-
+  def play_again
+    puts 'Would you like to play again?'
+    play_again_flag = nil
+    while play_again_flag.nil?
+      response = gets.chomp.downcase
+      case response
+      when 'yes', 'y'
+        play_again_flag = true 
+        initialize
+        run
+      when 'no', 'n', 'quit'
+        play_again_flag = false
+        puts 'Goodbye!'
+      else
+        puts 'Please enter yes or no'
+      end
+    end
+  end
 
 end
 
