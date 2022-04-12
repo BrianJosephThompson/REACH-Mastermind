@@ -1,76 +1,12 @@
-# TODO(Brian Thompson): Add functionality to play again
+# TODO(COMPLETE): Add functionality to play again
+# TODO(Brian Thompson): Write explanatory comments
+# TODO(COMPLETE): Setup input validation
 # TODO(Brian Thompson): Create Unit Tests
 # TODO(Brian Thompson): Allow varying difficulty levels
 # TODO(Brian Thompson): Implement High Score logic, Add SQL database to store information
 
+Dir["./modules/*.rb"].each {|file| require file }
 
-require 'uri'
-require 'net/http'
-
-
-class RandomCodeGenerator
-  DIGITS_REQUIRED      = 4
-  MIN_NUMBER           = 0
-  MAX_NUMBER           = 7
-  COLUMNS              = 1
-  NUMBER_BASE          = 10
-  FORMAT               = :plain
-  RANDOM_REQUEST       = :new
-
-  def initialize
-    @random_code_array = []
-  end
-
-  # generates code from api if internet connection exists
-  # otherwise will generate an internal code.
-  def generate_secret_code_array
-    if internet_connection?
-      get_code_from_api
-    else
-      generate_internal_code_array
-    end
-    @random_code_array
-  end
-
-
-  def internet_connection?
-    begin
-      true if URI.open("https://www.random.org")
-    rescue
-      false
-    end
-  end
-
-
-  def get_code_from_api
-    uri = URI(
-      "https://www.random.org/integers/?
-      num=#{DIGITS_REQUIRED}&
-      min=#{MIN_NUMBER}&
-      max=#{MAX_NUMBER}&
-      col=#{COLUMNS}&
-      base=#{NUMBER_BASE}&
-      format=#{FORMAT}&
-      rnd#{RANDOM_REQUEST}&
-      ")
-
-    response = Net::HTTP.get_response(uri)
-    temp = response.body if response.is_a?(Net::HTTPSuccess)
-    string_array = temp.split
-    string_array.each { |x| @random_code_array << x.to_i }
-  end
-
-
-  def generate_internal_code_array
-    index = 0
-    while index < DIGITS_REQUIRED
-        @random_code_array << rand(MIN_NUMBER..MAX_NUMBER)
-        index += 1
-    end
-  end
-
-
-end
 
 class Mastermind
   DIGITS                        = 4
@@ -80,13 +16,14 @@ class Mastermind
     @rounds                     = 10
     @current_round              = 0
     @code_array                 = []
-    @game_over_flag             = false
-    @number_generator           = RandomCodeGenerator.new
+    @game_over                  = false
+    @number_generator           = CodeGenerator.new
     init_guess_variables
   end
 
 
   def init_guess_variables
+    @valid_user_input           = false
     @code_check_array           = []
     @guess_array                = []
     @right_number_right_place   = 0
@@ -95,9 +32,32 @@ class Mastermind
 
 
   def get_user_input
-    temp_array = gets.chomp.scan(/\d/)
-    temp_array.each { |digit| @guess_array << digit.to_i }
+    while !@valid_user_input
+      response = gets.chomp
+      valid_input = validate_user_input(response)
+    end
+    valid_input.each { |digit| @guess_array << digit.to_i }
     @code_array.each { |digit| @code_check_array << digit }
+  end
+
+
+  def validate_user_input(response)
+    case response
+    when /\D/
+      puts "You have entered a character, only digits are valid"
+    when /[8-9]/
+      puts "Only digits from 0-7 are valid"
+    when /[0-7]/
+      if response.size != 4
+        puts "Please only enter four digits"
+      else
+        @valid_user_input = true
+        response = response.scan(/\d/)
+      end
+    else
+      puts "Invalid Input"
+    end
+    response
   end
 
 
@@ -115,7 +75,7 @@ class Mastermind
       check_user_input
       @current_round += 1
       print_program_response
-      if @game_over_flag == true
+      if @game_over == true
         break
       else
         init_guess_variables
@@ -166,7 +126,7 @@ class Mastermind
     case
     when @right_number_right_place == DIGITS
       puts "Congratulations! You've Won!"
-      @game_over_flag = true
+      @game_over = true
     when @right_number_right_place == 0 && @right_number_wrong_place == 0
       puts "The numbers you have guessed aren't included in the secret code!"
     else
@@ -180,7 +140,7 @@ class Mastermind
   def track_player_guesses
     guess_count = @rounds - @current_round
     case
-    when @current_round != @rounds && @game_over_flag == false
+    when @current_round != @rounds && @game_over == false
       puts "You have #{guess_count} guesses remaining!"
     when @current_round == @rounds
       puts "So sorry, you're out of guesses! Better luck next time!"
