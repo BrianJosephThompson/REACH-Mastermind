@@ -7,7 +7,8 @@
 
 Dir["./modules/*.rb"].each {|file| require file }
 
-
+# A class for executing the game mastermind from the command line.
+# Guess to Code checking is done via array comparison.
 class Mastermind
   DIGITS                        = 4
 
@@ -21,7 +22,7 @@ class Mastermind
     init_guess_variables
   end
 
-
+  # Initializes variables that are used in code checking validation.
   def init_guess_variables
     @valid_user_input           = false
     @code_check_array           = []
@@ -30,17 +31,31 @@ class Mastermind
     @right_number_wrong_place   = 0
   end
 
-
+  # Gets and validates user input. Once valid, fills guess array
+  # and creates a copy of the original code array for future checks.
   def get_user_input
     while !@valid_user_input
       response = gets.chomp
       valid_input = validate_user_input(response)
     end
-    valid_input.each { |digit| @guess_array << digit.to_i }
-    @code_array.each { |digit| @code_check_array << digit }
+    @guess_array = fill_integer_array(valid_input)
+    @code_check_array = fill_integer_array(@code_array)
   end
 
+  # creates an integer copy of input array
+  def fill_integer_array(input_array)
+    integer_array = []
+    input_array.each do |element|
+      integer_array << element.to_i
+    end
+    integer_array
+  end
 
+  # Validates user response and illicits a response based on:
+  #   Whether the response contains anything other than numbers
+  #   Whether the response contains the numbers 8 or 9.
+  #   If the response contains the numbers 0-7 and is only
+  #   4 digits long, the response is considered valid and returned.
   def validate_user_input(response)
     case response
     when /\D/
@@ -60,14 +75,14 @@ class Mastermind
     response
   end
 
-
+  # Retrieves secret code from CodeGenerator class.
   def run
     @code_array = @number_generator.generate_secret_code_array
     puts "#{@code_array}"
     start_game
   end
 
-
+  # Initiates the start of the guessing loop.
   def start_game
     puts "Will you guess the secret code?"
     while (@current_round < @rounds)
@@ -84,13 +99,16 @@ class Mastermind
     play_again
   end
 
-
+  # Calls two functions to check well placed and misplaced digits.
   def check_user_input
     check_well_placed_digit
     check_misplaced_digit
   end
 
-
+  # Checks to see if player guess numbers match to code guess numbers
+  # at the same index. If there is a match, it is counted and the matching 
+  # numbers at said index are deleted from each array. The index and loop are
+  # then decremented to account for the new array size.
   def check_well_placed_digit
     index = 0
     while index < DIGITS - @right_number_right_place
@@ -104,7 +122,10 @@ class Mastermind
     end
   end
 
-
+  # Checks each remaining guess array element against the remaining code array elements.
+  # If a correct number exists in the incorrect digit location, it is counted
+  # and the check continues with comparing the next guess array element to the
+  # remaining code array elements.
   def check_misplaced_digit
     index = 0
     puts "#{@guess_array}"
@@ -121,7 +142,10 @@ class Mastermind
     end
   end
 
-
+  # prints computer response to the user's guess based on:
+  #   Whether they have won the game.
+  #   Whether their guess contains numbers included in the secret code.
+  #   The count of their correctly placed guesses and misplaced guesses.
   def print_program_response
     case
     when @right_number_right_place == DIGITS
@@ -133,7 +157,9 @@ class Mastermind
       puts "Right Number Right Digit: #{@right_number_right_place}"
       puts "Right Number Wrong Digit: #{@right_number_wrong_place}"
     end
-    track_player_guesses
+    if @game_over == true
+      track_player_guesses
+    end
   end
 
 
@@ -145,7 +171,6 @@ class Mastermind
     when @current_round == @rounds
       puts "So sorry, you're out of guesses! Better luck next time!"
     else
-      puts "when will i print?"
     end
   end
 
