@@ -1,7 +1,10 @@
+
+
 # module contains functions that are essential to the core
 # functionality of the game.
 module Core
-
+  DIGITS                        = 4
+  
   # Initializes variables that are used in code checking validation.
   def init_guess_variables
     @valid_user_input           = false
@@ -66,4 +69,5 @@ module Core
       index += 1
     end
   end
+
 end

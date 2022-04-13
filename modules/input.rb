@@ -1,7 +1,9 @@
+
 # Module contains functions that receive input from user input
 # and illicits a response from the computer.
 module Input
-
+  DIGITS                        = 4
+  
   # Gets and validates user input. Once valid, fills guess array
   # and creates a copy of the original code array for future checks.
   def get_user_input
@@ -100,7 +102,7 @@ module Input
 
   # Algorithm for calculating player scores.
   def calculate_player_score
-    @player_score = (@rounds - @current_round) * 10 + 9
+    @player_score = (@rounds - @current_round) * 10 + rand(1..9)
   end
 
 
