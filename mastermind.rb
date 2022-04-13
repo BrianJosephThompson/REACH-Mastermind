@@ -14,6 +14,8 @@ class Mastermind
 
 
   def initialize
+    @player_name                = nil
+    @player_score               = 0
     @rounds                     = 10
     @current_round              = 0
     @code_array                 = []
@@ -21,6 +23,7 @@ class Mastermind
     @number_generator           = CodeGenerator.new
     init_guess_variables
   end
+
 
   # Initializes variables that are used in code checking validation.
   def init_guess_variables
@@ -30,6 +33,7 @@ class Mastermind
     @right_number_right_place   = 0
     @right_number_wrong_place   = 0
   end
+
 
   # Gets and validates user input. Once valid, fills guess array
   # and creates a copy of the original code array for future checks.
@@ -42,6 +46,7 @@ class Mastermind
     @code_check_array = fill_integer_array(@code_array)
   end
 
+
   # creates an integer copy of input array
   def fill_integer_array(input_array)
     integer_array = []
@@ -50,6 +55,7 @@ class Mastermind
     end
     integer_array
   end
+
 
   # Validates user response and illicits a response based on:
   #   Whether the response contains anything other than numbers
@@ -75,12 +81,14 @@ class Mastermind
     response
   end
 
+
   # Retrieves secret code from CodeGenerator class.
   def run
     @code_array = @number_generator.generate_secret_code_array
     puts "#{@code_array}"
     start_game
   end
+
 
   # Initiates the start of the guessing loop.
   def start_game
@@ -99,11 +107,13 @@ class Mastermind
     play_again
   end
 
+
   # Calls two functions to check well placed and misplaced digits.
   def check_user_input
     check_well_placed_digit
     check_misplaced_digit
   end
+
 
   # Checks to see if player guess numbers match to code guess numbers
   # at the same index. If there is a match, it is counted and the matching 
@@ -121,6 +131,7 @@ class Mastermind
       index += 1
     end
   end
+
 
   # Checks each remaining guess array element against the remaining code array elements.
   # If a correct number exists in the incorrect digit location, it is counted
@@ -142,6 +153,7 @@ class Mastermind
     end
   end
 
+
   # prints computer response to the user's guess based on:
   #   Whether they have won the game.
   #   Whether their guess contains numbers included in the secret code.
@@ -150,6 +162,8 @@ class Mastermind
     case
     when @right_number_right_place == DIGITS
       puts "Congratulations! You've Won!"
+      calculate_player_score
+      fetch_user_name
       @game_over = true
     when @right_number_right_place == 0 && @right_number_wrong_place == 0
       puts "The numbers you have guessed aren't included in the secret code!"
@@ -163,6 +177,7 @@ class Mastermind
   end
 
 
+  # Tracks and responds with the players remaining guesses.
   def track_player_guesses
     guess_count = @rounds - @current_round
     case
@@ -175,6 +190,7 @@ class Mastermind
   end
 
 
+  # Restarts the game if the player would like to play again.
   def play_again
     puts 'Would you like to play again?'
     play_again_flag = nil
@@ -193,6 +209,20 @@ class Mastermind
       end
     end
   end
+
+
+  def calculate_player_score
+    @player_score = (@rounds - @current_round) * 10 + 9
+  end
+
+
+  def fetch_user_name
+    puts "Please enter your name"
+    player_name = gets.chomp
+    @player_name = player_name[0..15]
+  end
+  
+
 
 end
 
