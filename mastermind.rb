@@ -154,7 +154,7 @@ class Mastermind
   end
 
 
-  # prints computer response to the user's guess based on:
+  # Prints computer response to the user's guess based on:
   #   Whether they have won the game.
   #   Whether their guess contains numbers included in the secret code.
   #   The count of their correctly placed guesses and misplaced guesses.
@@ -164,6 +164,7 @@ class Mastermind
       puts "Congratulations! You've Won!"
       calculate_player_score
       fetch_user_name
+      Users.add_user_to_db(score: @player_score, username: "#{@player_name}")
       @game_over = true
     when @right_number_right_place == 0 && @right_number_wrong_place == 0
       puts "The numbers you have guessed aren't included in the secret code!"
@@ -204,25 +205,24 @@ class Mastermind
       when 'no', 'n', 'quit'
         play_again_flag = false
         puts 'Goodbye!'
+        Users.get_high_score_list
       else
         puts 'Please enter yes or no'
       end
     end
   end
 
-
+  # Simple algorithm for calculating player scores.
   def calculate_player_score
     @player_score = (@rounds - @current_round) * 10 + 9
   end
 
-
+  # Retrieve user name for adding to database.
   def fetch_user_name
     puts "Please enter your name"
     player_name = gets.chomp
     @player_name = player_name[0..15]
   end
-  
-
 
 end
 
