@@ -17,8 +17,6 @@ class Mastermind
   DIGITS                        = 4
 
   def initialize
-    @player_name                = nil
-    @player_score               = 0
     @rounds                     = 10
     @current_round              = 0
     @code_array                 = []
