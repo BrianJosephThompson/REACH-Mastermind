@@ -87,7 +87,7 @@ class Users
     rows.each do |user_data|
       puts "#{rank.to_s.rjust(2, ' ')}.   #{user_data[1].to_s.rjust(3, '0')}   #{user_data[2]}"
       rank += 1
-      if rank >= 10
+      if rank > 10
         break
       end
     end
