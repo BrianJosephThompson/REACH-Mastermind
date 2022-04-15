@@ -47,10 +47,6 @@ class Mastermind
     play_again
   end
 
-  # module contains functions that are essential to the core
-# functionality of the game.
-# module Core
-
   
   # Initializes variables that are used in code checking validation.
   def init_guess_variables
@@ -97,18 +93,13 @@ class Mastermind
   end
 
 
-  # Checks each remaining guess array element against the remaining code array elements.
-  # If a correct number exists in the incorrect digit location, it is counted
-  # and the check continues with comparing the next guess array element to the
-  # remaining code array elements.
+  # Checks a guess array element against each of the remaining code array elements.
+  # If a match is made, it is counted and the block is exited to avoid double counting.
   def check_misplaced_digit
     index = 0
-    puts "#{@guess_array}"
-    puts "break"
-    puts "#{@code_check_array}"
     while index < DIGITS - @right_number_right_place
-      @guess_array.each do |digit|
-        if digit == @code_check_array[index]
+      @code_check_array.each do |digit|
+        if digit == @guess_array[index]
           @right_number_wrong_place += 1
           break
         end
@@ -117,12 +108,6 @@ class Mastermind
     end
   end
 
-# end
-
-
-# Module contains functions that receive input from user input
-# and illicits a response from the computer.
-# module Input
 
   # Gets and validates user input. Once valid, fills guess array
   # and creates a copy of the original code array for future checks.
@@ -201,9 +186,7 @@ class Mastermind
       puts "Right Number Right Digit: #{@right_number_right_place}"
       puts "Right Number Wrong Digit: #{@right_number_wrong_place}"
     end
-    if @game_over == true
-      track_player_guesses
-    end
+    track_player_guesses if @game_over == false
   end
 
 
@@ -231,8 +214,6 @@ class Mastermind
     puts "Please enter your name"
     player = gets.chomp[0..15]
   end
-# end
-
 end
 
 # Starts the game
