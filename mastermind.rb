@@ -13,7 +13,6 @@ require_relative "model.rb"
 # A class for executing the game mastermind from the command line.
 # Guess to Code checking is done via array comparison.
 class Mastermind
-
   DIGITS                        = 4
 
   def initialize
@@ -27,19 +26,14 @@ class Mastermind
 
 
   # Retrieves secret code from CodeGenerator class.
-  def run
-    @code_array = @number_generator.generate_secret_code_array
-    puts "#{@code_array}"
-    game_loop
-  end
-
-
   # Initiates the start of the guessing loop.
   def game_loop
+    @code_array = @number_generator.generate_secret_code_array
     puts "Will you guess the secret code?"
     until (@current_round == @rounds || @game_over == true)
       get_user_input
-      check_user_input
+      check_well_placed_digit
+      check_misplaced_digit
       @current_round += 1
       print_program_response
       init_guess_variables
@@ -47,7 +41,7 @@ class Mastermind
     play_again
   end
 
-  
+
   # Initializes variables that are used in code checking validation.
   def init_guess_variables
     @valid_user_input           = false
@@ -65,13 +59,6 @@ class Mastermind
       integer_array << element.to_i
     end
     integer_array
-  end
-
-
-  # Calls two functions to check well placed and misplaced digits.
-  def check_user_input
-    check_well_placed_digit
-    check_misplaced_digit
   end
 
 
@@ -156,7 +143,7 @@ class Mastermind
       when 'yes', 'y'
         play_again_flag = true 
         initialize
-        run
+        game_loop
       when 'no', 'n', 'quit'
         play_again_flag = false
         puts 'Goodbye!'
