@@ -2,7 +2,7 @@
 
 # module contains functions that are essential to the core
 # functionality of the game.
-module Core
+module Gameplay
   DIGITS                        = 4
   
   # Initializes variables that are used in code checking validation.
@@ -25,13 +25,6 @@ module Core
   end
 
 
-  # Calls two functions to check well placed and misplaced digits.
-  def check_user_input
-    check_well_placed_digit
-    check_misplaced_digit
-  end
-
-
   # Checks to see if player guess numbers match to code guess numbers
   # at the same index. If there is a match, it is counted and the matching 
   # numbers at said index are deleted from each array. The index and loop are
@@ -50,18 +43,13 @@ module Core
   end
 
 
-  # Checks each remaining guess array element against the remaining code array elements.
-  # If a correct number exists in the incorrect digit location, it is counted
-  # and the check continues with comparing the next guess array element to the
-  # remaining code array elements.
+  # Checks a guess array element against each of the remaining code array elements.
+  # If a match is made, it is counted and the block is exited to avoid double counting.
   def check_misplaced_digit
     index = 0
-    puts "#{@guess_array}"
-    puts "break"
-    puts "#{@code_check_array}"
     while index < DIGITS - @right_number_right_place
-      @guess_array.each do |digit|
-        if digit == @code_check_array[index]
+      @code_check_array.each do |digit|
+        if digit == @guess_array[index]
           @right_number_wrong_place += 1
           break
         end
