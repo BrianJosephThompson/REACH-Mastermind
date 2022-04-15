@@ -1,5 +1,5 @@
 Dir["./modules/*.rb"].each { |file| require_relative file }
-require_relative "code.rb"
+require_relative "code_generator.rb"
 require_relative "model.rb"
 
 # A class for executing the game mastermind from the command line.
