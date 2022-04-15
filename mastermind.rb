@@ -24,6 +24,7 @@ class Mastermind
   # Initiates the start of the guessing loop.
   def game_loop
     @code_array = @number_generator.generate_secret_code_array
+    puts "==== Welcome to Mastermind ===="
     puts "Will you guess the secret code?"
     until (@current_round == @rounds || @game_over == true)
       get_user_input
