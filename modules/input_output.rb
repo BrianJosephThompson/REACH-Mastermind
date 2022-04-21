@@ -7,6 +7,11 @@ module InputOutput
   # Gets and validates user input. Once valid, fills guess array
   # and creates a copy of the original code array for future checks.
   def get_user_input
+    if check_player_id == "player_1"
+      puts "Player 1 its your turn"
+    elsif check_player_id == "player_2"
+      puts "Player 2 its your turn"
+    end
     while !@valid_user_input
       print "> "
       response = gets.chomp
@@ -15,7 +20,14 @@ module InputOutput
     @guess_array = fill_integer_array(valid_input)
     @code_check_array = fill_integer_array(@code_array)
   end
-  
+
+  def check_player_id
+    if @current_round % 2 == 0
+      return "player_1"
+    else
+      return "player_2"
+    end
+  end
 
   # Validates user response and illicits a response based on:
   #   Whether the response contains anything other than numbers
@@ -45,16 +57,14 @@ module InputOutput
   # Restarts the game if the player would like to play again.
   def play_again
     puts 'Would you like to play again?'
-    play_again_flag = nil
-    while play_again_flag.nil?
+    @player_plays_again = nil
+    while @player_plays_again.nil?
       response = gets.chomp.downcase
       case response
       when 'yes', 'y'
-        play_again_flag = true 
-        initialize
-        game_loop
+        @player_plays_again = true
       when 'no', 'n', 'quit'
-        play_again_flag = false
+        @player_plays_again = false
         puts 'Goodbye!'
         Users.get_high_score_list
       else
@@ -71,7 +81,11 @@ module InputOutput
   def print_program_response
     case
     when @right_number_right_place == DIGITS
-      puts "Congratulations! You've Won!"
+      if @current_round % 2 == 0
+        puts "Congratulations Player 1! You've Won!"
+      else
+        puts "Congratulations Player 2! You've Won!"
+      end
       score = calculate_player_score
       player = fetch_user_name
       Users.add_user_to_db(score: score, username: "#{player}")
@@ -88,12 +102,18 @@ module InputOutput
 
   # Tracks and responds with the players remaining guesses.
   def track_player_guesses
-    guess_count = @rounds - @current_round
+    if @current_round % 2 == 0
+      @player_1_guesses += 1
+      guess_count = 10 - @player_1_guesses
+    else
+      @player_2_guesses += 1
+      guess_count = 10 - @player_2_guesses
+    end
     case
     when @current_round != @rounds && @game_over == false
       puts "You have #{guess_count} guesses remaining!"
     when @current_round == @rounds
-      puts "So sorry, you're out of guesses! Better luck next time!"
+      puts "So sorry, both players have lost! Better luck next time!"
     else
     end
   end
